@@ -24,7 +24,7 @@ const users = [
     id: '1',
     name: 'John Doe',
     email: 'john@example.com',
-    password: '$2a$10$mockhashedpassword' // In real app, this would be properly hashed
+    password: '$2a$10$mockhashedpassword' 
   },
   {
     id: '2',

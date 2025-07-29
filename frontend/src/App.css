@@ -34,7 +34,6 @@ body {
 
 /* Buttons */
 .btn {
-  display: inline-block;
   padding: 12px 24px;
   border: none;
   border-radius: 6px;
