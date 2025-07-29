@@ -1,3 +1,12 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always"
 }
