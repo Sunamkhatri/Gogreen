@@ -4,43 +4,39 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 
-// Mock database (should be replaced with real DB in production)
-const users = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: '$2a$10$mockhashedpassword'
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    password: '$2a$10$mockhashedpassword'
-  }
-];
-
-// Mock plants
-export const mockPlants = [
-  {
-    id: 1,
-    name: 'Monstera Deliciosa',
-    price: 1899,
-    image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=400',
-    description: 'Beautiful Swiss cheese plant with distinctive leaf holes',
-    category: 'Indoor',
-    careLevel: 'Easy',
-    size: 'Medium',
-    inStock: true
-  },
-  // ...add more mock plants as needed
-];
-
-// Mock cart
+// In-memory data stores (start empty, add via API)
+let users = [];
+export let mockPlants = [];
 let cart = [];
-
-// Mock orders
 let orders = [];
+// Add plant (for Postman/manual testing)
+export const addPlant = (req, res) => {
+  const { name, price, image, description, category, careLevel, size, inStock } = req.body;
+  if (!name || !price) {
+    return res.status(400).json({ message: 'Name and price are required' });
+  }
+  const newPlant = {
+    id: mockPlants.length + 1,
+    name,
+    price,
+    image: image || '',
+    description: description || '',
+    category: category || '',
+    careLevel: careLevel || '',
+    size: size || '',
+    inStock: inStock !== undefined ? inStock : true
+  };
+  mockPlants.push(newPlant);
+  res.status(201).json(newPlant);
+};
+// Delete plant (for Postman/manual testing)
+export const deletePlant = (req, res) => {
+  const { id } = req.params;
+  const idx = mockPlants.findIndex(p => p.id === parseInt(id));
+  if (idx === -1) return res.status(404).json({ message: 'Plant not found' });
+  mockPlants.splice(idx, 1);
+  res.json({ message: 'Plant deleted' });
+};
 
 // PLANT CONTROLLER
 export const getAllPlants = (req, res) => {
