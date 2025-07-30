@@ -11,7 +11,7 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
     confirmPassword: ''
   });
   
-  const { login, register } = useAuth();
+  const { login, signup } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -30,14 +30,14 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
           return;
         }
         
-        const result = await register(formData.name, formData.email, formData.password);
-        if (result.success) {
+        const result = await signup(formData.name, formData.email, formData.password);
+        if (result) {
           onClose();
           setFormData({ name: '', email: '', password: '', confirmPassword: '' });
         }
       } else {
         const result = await login(formData.email, formData.password);
-        if (result.success) {
+        if (result) {
           onClose();
           setFormData({ name: '', email: '', password: '', confirmPassword: '' });
         }
@@ -140,4 +140,4 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }) => {
   );
 };
 
-export default AuthModal; 
+export default AuthModal;

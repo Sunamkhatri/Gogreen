@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import AuthModal from '../components/AuthModal';
-import './Home.css';
 
 const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const featuredPlants = [
     {
@@ -32,13 +28,8 @@ const Home = () => {
     }
   ];
 
-  const openAuthModal = () => {
-    setShowAuthModal(true);
-  };
-
-  const closeAuthModal = () => {
-    setShowAuthModal(false);
-  };
+  const openAuthModal = () => setShowAuthModal(true);
+  const closeAuthModal = () => setShowAuthModal(false);
 
   return (
     <div className="home">
@@ -100,4 +91,4 @@ const Home = () => {
   );
 };
 
-export default Home; 
+export default Home;

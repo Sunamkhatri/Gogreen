@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import './SignupPage.css';
 
 const Signuppage = () => {
+  const { signup } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,8 @@ const Signuppage = () => {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Registration failed');
-      navigate('/login');
+      signup(form.name, form.email, form.password);
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message);
     } finally {

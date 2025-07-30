@@ -25,7 +25,7 @@ const Login = () => {
     try {
       const result = await login(formData.email, formData.password);
       if (result.success) {
-        navigate('/');
+        navigate('/dashboard');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -85,4 +85,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

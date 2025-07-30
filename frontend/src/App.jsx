@@ -1,27 +1,31 @@
 import React from 'react';
-import Signuppage from './Signuppage';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
-import PlantList from './pages/PlantList';
-import PlantDetail from './pages/PlantDetail';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
 import './App.css';
+
+function PrivateRoute({ children }) {
+  const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
+}
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="App">
-          <Navbar />
           <main className="main-content">
             <Routes>
-              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Signuppage />} />
-              <Route path="/plants" element={<PlantList />} />
-              <Route path="/plants/:id" element={<PlantDetail />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              } />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </main>
         </div>

@@ -25,7 +25,9 @@ const Login = () => {
     try {
       const result = await login(formData.email, formData.password);
       if (result.success) {
-        navigate('/');
+        navigate('/dashboard');
+      } else {
+        setError('Invalid credentials');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -66,6 +68,8 @@ const Login = () => {
               />
             </div>
             
+            {error && <div style={{ color: 'red' }}>{error}</div>}
+            
             <button type="submit" className="btn btn-primary">
               Sign In
             </button>
@@ -85,4 +89,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
