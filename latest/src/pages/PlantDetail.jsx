@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
 import { useParams } from 'react-router-dom';
 import { mockPlants } from '../services/api';
 import './PlantDetail.css';
@@ -7,6 +8,15 @@ const PlantDetail = () => {
   const { id } = useParams();
   const [plant, setPlant] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
+  const [added, setAdded] = useState(false);
+  const handleAddToCart = () => {
+    if (plant && plant.inStock) {
+      addToCart(plant);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 1500);
+    }
+  };
 
   useEffect(() => {
     // Simulate API call
@@ -43,7 +53,6 @@ const PlantDetail = () => {
         <div className="plant-info">
           <h1 className="plant-title">{plant.name}</h1>
           <div className="plant-price">NPR {plant.price.toLocaleString()}</div>
-          
           <div className="plant-description">
             <p>{plant.description}</p>
           </div>
@@ -62,6 +71,15 @@ const PlantDetail = () => {
               <span className="spec-value">{plant.size}</span>
             </div>
           </div>
+
+          <button
+            className="btn btn-primary add-to-cart-btn"
+            onClick={handleAddToCart}
+            disabled={!plant.inStock || added}
+            style={{ marginTop: '1.5rem', minWidth: 160 }}
+          >
+            {plant.inStock ? (added ? 'Added!' : 'Add to Cart') : 'Out of Stock'}
+          </button>
         </div>
       </div>
     </div>
