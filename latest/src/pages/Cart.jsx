@@ -10,11 +10,10 @@ const Cart = () => {
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState('');
+  const [purchased, setPurchased] = useState(false);
 
   // Mock cart data for demonstration
   const mockCartItems = [
-    {
-      id: 1,
       plantId: 1,
       quantity: 2,
       plant: mockPlants[0] // Monstera Deliciosa
@@ -65,6 +64,66 @@ const Cart = () => {
     try {
       // In a real app, you would use: await cartAPI.removeFromCart(itemId);
       setCartItems(prev => prev.filter(item => item.id !== itemId));
+import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
+import './Cart.css';
+
+export default function Cart() {
+  const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const [purchased, setPurchased] = useState(false);
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
+
+  const handlePurchase = () => {
+    setPurchased(true);
+    clearCart();
+  };
+
+  if (purchased) {
+    return (
+      <div className="cart-container">
+        <h2>Thank you for your purchase!</h2>
+        <p>Your order has been placed successfully.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="cart-container">
+      <h2>Your Cart</h2>
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <>
+          <div className="cart-list">
+            {cart.map(item => (
+              <div key={item.product.id} className="cart-item">
+                <img src={item.product.image} alt={item.product.name} className="cart-item-img" />
+                <div className="cart-item-info">
+                  <div className="cart-item-name">{item.product.name}</div>
+                  <div className="cart-item-price">NPR {item.product.price}</div>
+                  <div className="cart-item-qty">
+                    <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>-</button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)}>+</button>
+                  </div>
+                  <button className="cart-item-remove" onClick={() => removeFromCart(item.product.id)}>Remove</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="cart-total">
+            <strong>Total: NPR {total}</strong>
+          </div>
+          <button className="cart-purchase-btn" onClick={handlePurchase}>Purchase</button>
+        </>
+      )}
+    </div>
+  );
+}
     } catch (err) {
       setError('Failed to remove item. Please try again.');
     }
@@ -109,6 +168,11 @@ const Cart = () => {
     return calculateSubtotal() - calculateDiscount() + calculateTax();
   };
 
+  const handlePurchase = () => {
+    setPurchased(true);
+    clearCart();
+  };
+
   if (loading) {
     return (
       <div className="cart-page">
@@ -121,6 +185,15 @@ const Cart = () => {
     return (
       <div className="cart-page">
         <div className="alert alert-error">{error}</div>
+      </div>
+    );
+  }
+
+  if (purchased) {
+    return (
+      <div className="cart-container">
+        <h2>Thank you for your purchase!</h2>
+        <p>Your order has been placed successfully.</p>
       </div>
     );
   }
@@ -230,7 +303,7 @@ const Cart = () => {
               <span>NPR {calculateTotal().toLocaleString()}</span>
             </div>
             
-            <button className="btn btn-primary checkout-btn">
+            <button className="btn btn-primary checkout-btn" onClick={handlePurchase}>
               Proceed to Checkout
             </button>
             
@@ -244,4 +317,4 @@ const Cart = () => {
   );
 };
 
-export default Cart; 
+export default Cart;
