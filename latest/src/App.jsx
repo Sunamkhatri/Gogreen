@@ -13,7 +13,7 @@ import PlantDetail from './pages/PlantDetail';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import Profile from './pages/Profile';
-import './App.css';
+import '../App.css';
 
 function App() {
   return (

@@ -168,9 +168,4 @@ export default function Cart() {
       )}
     </div>
   );
-};
-
-export default Cart;
-<Route path="/cart" element={<Cart />} />
-<Route path="/orders" element={<Orders />} />
-<Route path="/profile" element={<Profile />} />
+}
