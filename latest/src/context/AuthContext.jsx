@@ -30,55 +30,24 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Mock login: always succeed and set a fake user
   const login = async (email, password) => {
-    try {
-      const response = await axios.post('https://api.example.com/auth/login', {
-        email,
-        password
-      });
-
-      const { token, user: userData } = response.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      setUser(userData);
-      setIsAuthenticated(true);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      return { success: true };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Login failed' 
-      };
-    }
+    const userData = { name: 'Demo User', email };
+    localStorage.setItem('token', 'mock-token');
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    setIsAuthenticated(true);
+    return { success: true };
   };
 
+  // Mock register: always succeed and set a fake user
   const register = async (name, email, password) => {
-    try {
-      const response = await axios.post('https://api.example.com/auth/register', {
-        name,
-        email,
-        password
-      });
-
-      const { token, user: userData } = response.data;
-      
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      setUser(userData);
-      setIsAuthenticated(true);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      return { success: true };
-    } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.message || 'Registration failed' 
-      };
-    }
+    const userData = { name, email };
+    localStorage.setItem('token', 'mock-token');
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    setIsAuthenticated(true);
+    return { success: true };
   };
 
   const logout = () => {

@@ -1,3 +1,9 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { mockPlants } from '../services/api';
+import './PlantDetail.css';
+
 const PlantDetail = () => {
   const { id } = useParams();
   const [plant, setPlant] = useState(null);
