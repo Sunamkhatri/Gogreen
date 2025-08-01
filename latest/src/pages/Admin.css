@@ -1,0 +1,29 @@
+.admin-page {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 32px;
+}
+.admin-section {
+  margin-bottom: 32px;
+}
+.admin-section h3 {
+  margin-bottom: 12px;
+}
+.admin-section ul {
+  padding-left: 0;
+}
+.admin-section li {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+.btn.btn-primary {
+  background: #388e3c;
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 12px;
+  border: none;
+  cursor: pointer;
+}
