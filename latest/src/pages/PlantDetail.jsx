@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { mockPlants } from '../services/api';
+import PlantImage from '../components/PlantImage';
 import './PlantDetail.css';
 
 const PlantDetail = () => {
@@ -65,8 +66,10 @@ const PlantDetail = () => {
     <div className="plant-detail-page">
       <div className="plant-detail-container">
         <div className="plant-image">
-          <img src={plant.image} alt={plant.name} />
-          <button className="btn btn-secondary download-btn" onClick={handleDownload} style={{marginTop: '1rem', width: '100%'}}>Download Image</button>
+          <PlantImage src={plant.image} alt={plant.name} />
+          <button className="btn btn-secondary download-btn" onClick={handleDownload} style={{marginTop: '1rem', width: '100%'}}>
+            📥 Download Image
+          </button>
         </div>
         <div className="plant-info">
           <h1 className="plant-title">{plant.name}</h1>
@@ -115,14 +118,19 @@ const PlantDetail = () => {
               +
             </button>
           </div>
-          <button
-            className="btn btn-primary add-to-cart-btn"
-            onClick={handleAddToCart}
-            disabled={!plant.inStock || added}
-            style={{ marginTop: '1.5rem', minWidth: 160 }}
-          >
-            {plant.inStock ? (added ? 'Added!' : 'Add to Cart') : 'Out of Stock'}
-          </button>
+          <div className="action-buttons" style={{ marginTop: '1.5rem', display: 'flex', gap: '10px' }}>
+            <button
+              className="btn btn-primary add-to-cart-btn"
+              onClick={handleAddToCart}
+              disabled={!plant.inStock || added}
+              style={{ flex: 1, minWidth: 160 }}
+            >
+              {plant.inStock ? (added ? '✅ Added!' : '🛒 Add to Cart') : '❌ Out of Stock'}
+            </button>
+            <Link to="/cart" className="btn btn-secondary" style={{ padding: '12px 20px' }}>
+              🛒 View Cart
+            </Link>
+          </div>
         </div>
       </div>
     </div>

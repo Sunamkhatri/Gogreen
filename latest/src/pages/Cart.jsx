@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { orderAPI } from '../services/api';
 import './Cart.css';
 
 export default function Cart() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState('');
   const [purchased, setPurchased] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Calculate subtotal
   const calculateSubtotal = () => {
@@ -42,16 +45,59 @@ export default function Cart() {
   };
 
   // Handle purchase
-  const handlePurchase = () => {
-    setPurchased(true);
-    clearCart();
+  const handlePurchase = async () => {
+    if (cart.length === 0) return;
+
+    setIsProcessing(true);
+    try {
+      // Prepare order data
+      const orderData = {
+        items: cart.map(item => ({
+          productId: item.product.id,
+          productName: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price
+        })),
+        subtotal: calculateSubtotal(),
+        discount: calculateDiscount(),
+        tax: calculateTax(),
+        total: calculateTotal(),
+        promoCode: promoCode || null
+      };
+
+      // Create order via API
+      await orderAPI.createOrder(orderData);
+
+      // Clear cart and show success
+      clearCart();
+      setPurchased(true);
+
+      // Redirect to orders page after a delay
+      setTimeout(() => {
+        navigate('/orders');
+      }, 3000);
+
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      alert('Purchase failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (purchased) {
     return (
-      <div className="cart-container">
-        <h2>Thank you for your purchase!</h2>
-        <p>Your order has been placed successfully.</p>
+      <div className="cart-page">
+        <div className="purchase-success">
+          <div className="success-icon">✅</div>
+          <h2>Thank you for your purchase!</h2>
+          <p>Your order has been placed successfully and will be processed shortly.</p>
+          <p>You will be redirected to your orders page in a few seconds...</p>
+          <div className="success-actions">
+            <Link to="/orders" className="btn btn-primary">View Orders</Link>
+            <Link to="/plants" className="btn btn-secondary">Continue Shopping</Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -157,8 +203,12 @@ export default function Cart() {
               <span>Total:</span>
               <span>NPR {calculateTotal().toLocaleString()}</span>
             </div>
-            <button className="btn btn-primary checkout-btn" onClick={handlePurchase}>
-              Proceed to Checkout
+            <button
+              className="btn btn-primary checkout-btn"
+              onClick={handlePurchase}
+              disabled={isProcessing || cart.length === 0}
+            >
+              {isProcessing ? 'Processing...' : 'Proceed to Checkout'}
             </button>
             <Link to="/plants" className="continue-shopping">
               Continue Shopping

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +24,18 @@ const Navbar = () => {
         <div className="navbar-menu">
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/plants" className="nav-link">Plants</Link>
-          
+
+          {isAuthenticated && (
+            <Link to="/cart" className="cart-icon-link">
+              <div className="cart-icon">
+                🛒
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
+                )}
+              </div>
+            </Link>
+          )}
+
           {isAuthenticated ? (
             <button onClick={handleLogout} className="btn btn-secondary">
               Logout

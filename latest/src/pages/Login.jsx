@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -8,7 +9,8 @@ const Login = () => {
     email: '',
     password: ''
   });
-  
+  const [isAdmin, setIsAdmin] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -21,14 +23,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     try {
-      const result = await login(formData.email, formData.password);
-      if (result.success) {
-        navigate('/dashboard');
-      }
-    } catch (err) {
-      console.error('Login error:', err);
+      await login(formData.email, formData.password, isAdmin);
+      navigate(isAdmin ? '/admin' : '/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
     }
   };
 
@@ -38,7 +37,6 @@ const Login = () => {
         <div className="login-card">
           <h2>Welcome Back</h2>
           <p>Sign in to your account</p>
-          
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
               <label htmlFor="email">Email</label>
@@ -52,7 +50,6 @@ const Login = () => {
                 required
               />
             </div>
-            
             <div className="form-group">
               <label htmlFor="password">Password</label>
               <input
@@ -65,12 +62,21 @@ const Login = () => {
                 required
               />
             </div>
-            
+            <div className="form-group" style={{marginBottom: '1rem'}}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={isAdmin}
+                  onChange={e => setIsAdmin(e.target.checked)}
+                  style={{marginRight: 8}}
+                />
+                Login as Admin
+              </label>
+            </div>
             <button type="submit" className="btn btn-primary">
               Sign In
             </button>
           </form>
-          
           <div className="login-footer">
             <p>
               Don't have an account?{' '}
