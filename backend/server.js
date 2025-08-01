@@ -2,14 +2,22 @@ import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import { Pool } from 'pg';
 import authRoutes from './routes/auth.js';
 import plantRoutes from './routes/plant.js';
 import userRoutes from './routes/user.js';
 import cartRoutes from './routes/cart.js';
 import orderRoutes from './routes/order.js';
 
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/plantdb'
+});
 
 // Middleware
 app.use(cors());
@@ -17,58 +25,6 @@ app.use(express.json());
 
 // JWT Secret
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-
-// Mock database
-const users = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    password: '$2a$10$mockhashedpassword' 
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    password: '$2a$10$mockhashedpassword'
-  }
-];
-
-const plants = [
-  {
-    id: 1,
-    name: 'Monstera Deliciosa',
-    price: 1899,
-    image: 'https://images.unsplash.com/photo-1614594975525-e45190c55d0b?w=400',
-    description: 'Beautiful Swiss cheese plant with distinctive leaf holes',
-    category: 'Indoor',
-    careLevel: 'Easy',
-    size: 'Medium',
-    inStock: true
-  },
-  {
-    id: 2,
-    name: 'Fiddle Leaf Fig',
-    price: 1999,
-    image: 'https://images.unsplash.com/photo-1593691509543-c55fb32e5cee?w=400',
-    description: 'Popular indoor tree with large, glossy leaves',
-    category: 'Indoor',
-    careLevel: 'Medium',
-    size: 'Large',
-    inStock: true
-  },
-  {
-    id: 3,
-    name: 'Snake Plant',
-    price: 1299,
-    image: 'https://images.unsplash.com/photo-1593691509543-c55fb32e5cee?w=400',
-    description: 'Low-maintenance plant perfect for beginners',
-    category: 'Indoor',
-    careLevel: 'Easy',
-    size: 'Small',
-    inStock: false
-  }
-];
 
 // Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
@@ -103,26 +59,27 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 
 // Get all plants (public)
-app.get('/api/plants', (req, res) => {
-  res.json({
-    message: 'Plants retrieved successfully',
-    plants
-  });
+app.get('/api/plants', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM plants');
+    res.json({ message: 'Plants retrieved successfully', plants: result.rows });
+  } catch (err) {
+    res.status(500).json({ message: 'Error retrieving plants', error: err.message });
+  }
 });
 
 // Get single plant (public)
-app.get('/api/plants/:id', (req, res) => {
-  const plantId = parseInt(req.params.id);
-  const plant = plants.find(p => p.id === plantId);
-
-  if (!plant) {
-    return res.status(404).json({ message: 'Plant not found' });
+app.get('/api/plants/:id', async (req, res) => {
+  try {
+    const plantId = parseInt(req.params.id);
+    const result = await pool.query('SELECT * FROM plants WHERE id = $1', [plantId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Plant not found' });
+    }
+    res.json({ message: 'Plant retrieved successfully', plant: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ message: 'Error retrieving plant', error: err.message });
   }
-
-  res.json({
-    message: 'Plant retrieved successfully',
-    plant
-  });
 });
 
 // Protected route example
